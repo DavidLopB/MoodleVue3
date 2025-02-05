@@ -1,85 +1,91 @@
-<script setup>
-import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
-</script>
-
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
+  <div>
+    <div class="container">
+      <div class="productoContainer" v-for="(producto, index) in productos" :key="index">
+        <div class="infoProducto">
+          <div class="nombreProducto">
+            <h2>{{ producto.nombre.toLocaleUpperCase() }}</h2>
+          </div>
+          <div class="descripcionProducto">
+            <p>{{ producto.descripcion }}</p>
+          </div>
+          <div class="enStockProducto">
+            <button v-if="producto.unidades > 0" @click="agregarAlCarrito(producto)">Agregar al carrito</button>
+            <p v-else>Producto no disponible en stock</p>
+          </div>
+          <div class="unidadesProducto">
+            <p>Quedan: {{ producto.unidades }}</p>
+          </div>
+        </div>
+      </div>
     </div>
-  </header>
-
-  <RouterView />
+    <div class="carrito">
+      <p>Carrito</p>
+      <div v-if="carrito.length > 0">
+        <div v-for="(articulo, index) in carrito" :key="index">
+          {{ articulo.articulo }} ({{ articulo.unidades }})
+          <button @click="quitarArticulo(index, articulo)">Eliminar</button>
+        </div>
+      </div>
+      <div v-else>
+        <p>No hay artículos en el carrito</p>
+      </div>
+    </div>
+  </div>
 </template>
+<script setup>
+import { ref } from 'vue';
 
-<style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
-}
+const carrito = ref([])
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
-}
-
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
+const productos = ref([
+  {
+    nombre: "Zapatos deportivos",
+    descripcion: 'Estos zapatos son perfectos para correr y hacer ejercicio',
+    unidades: 5
+  },
+  {
+    nombre: "Camiseta térmica",
+    descripcion: 'Camiseta térmica imprescindible para hacer deporte en invierno',
+    unidades: 2
   }
+])
 
-  .logo {
-    margin: 0 2rem 0 0;
-  }
+const agregarAlCarrito = (producto) => {
+  carrito.value.push(
+    {
+      articulo: producto.nombre,
+      unidades: 1
+    }
+  )
+  producto.unidades--
+}
 
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
+const quitarArticulo = (index, articulo) => {
+  carrito.value.splice(index, 1)
 
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
+  productos.value.forEach(producto => {
+    if (producto.nombre === articulo.articulo) {
+      producto.unidades++
+    }
+  });
+}
 
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
+</script>
+<style>
+.container {
+  display: flex;
+}
+
+.productoContainer {
+  display: grid;
+  background-color: lightblue;
+  margin-right: 1rem;
+  padding: 1rem;
+}
+
+.nombreProducto {
+  justify-items: center;
+  font-style: oblique;
 }
 </style>
