@@ -48,21 +48,35 @@ const productos = ref([
     nombre: "Camiseta térmica",
     descripcion: 'Camiseta térmica imprescindible para hacer deporte en invierno',
     unidades: 2
+  },
+  {
+    nombre: "Gorro",
+    descripcion: 'Gorro para invierno',
+    unidades: 4
   }
 ])
 
 const agregarAlCarrito = (producto) => {
-  carrito.value.push(
-    {
-      articulo: producto.nombre,
-      unidades: 1
+  if (producto.unidades > 0) {
+    let itemEnCarrito = carrito.value.find(item => item.articulo === producto.nombre);
+
+    if (itemEnCarrito) {
+      itemEnCarrito.unidades++;
+    } else {
+      carrito.value.push({ articulo: producto.nombre, unidades: 1 });
     }
-  )
-  producto.unidades--
-}
+
+    producto.unidades--;
+  }
+};
+
 
 const quitarArticulo = (index, articulo) => {
-  carrito.value.splice(index, 1)
+  if (carrito.value[index].unidades > 1) {
+    carrito.value[index].unidades--;
+  } else {
+    carrito.value.splice(index, 1);
+  }
 
   productos.value.forEach(producto => {
     if (producto.nombre === articulo.articulo) {
